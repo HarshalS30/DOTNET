@@ -1,0 +1,34 @@
+steps-->
+
+goto view ->sql server object explorer
+
+sql qurry-> database right click-> add new database-> 
+
+database-> tables-> add new table-> 
+
+CREATE TABLE [dbo].[ ]<--- square brackets type "Product"
+
+In table--> right click on id -> properties--> identify specification --> set "is identity" to True
+
+then update
+
+Demo product--> created table product right click-->view data-->fill the table
+
+
+now add dependencies
+
+tools--> nuget package manager-->manage nuget package for solution-->
+browse ---> and add req dependencies ---> in my case
+==> add below four
+Microsoft.Extensions.Configuration
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+System.Data.SqlClient
+
+add json file--->right click in ---> copy to output set "Copy if newer"
+(in json file you have to give server name datatbase name)
+
+
+add new class ---> Productlayer
+(some code)
+

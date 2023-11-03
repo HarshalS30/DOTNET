@@ -1,0 +1,111 @@
+create the table employee =>id, name, salary
+enter the record 
+using sql connection class connect to database and display record
+
+=========== Program.cs
+
+using Microsoft.Extensions.Configuration;
+
+namespace Employee
+{
+
+    internal class Program
+    {
+        private static IConfiguration _iconfiguration;
+
+        /*Usage in Main:
+
+        In the Main method of your application, you call GetAppSettingsFile to read the database connection string 
+        from the configuration file. Then, you call PrintProduct to retrieve and display the data from the "Product" table.*/
+        static void Main(string[] args)
+        {
+            GetAppSettingsFile();
+            PrintProduct();
+        }
+        static void GetAppSettingsFile()
+        {
+            var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("Appsettings.json", optional: false, reloadOnChange: true);
+            _iconfiguration = builder.Build();//where the file is we are there
+        }
+        static void PrintProduct()
+        {
+            Productlayer obj = new Productlayer(_iconfiguration);
+            obj.Products();
+
+
+        }
+    }
+
+}
+
+
+================== Appsettings.json
+
+{
+  "ConnectionStrings": {
+    "Default": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Dmo_product;Integrated Security=True;"
+  }
+}
+/* Adding a Configuration File==> you have an Appsettings.json file that contains the database 
+    connection string under the "ConnectionStrings" section. 
+  This is where the application retrieves the connection string from:*/
+
+=================== Productlayers.cs
+
+using Microsoft.Extensions.Configuration; //library. This allows you to read the database connection string from an Appsettings.json file.
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Employee
+{
+    public class Productlayer
+    {
+        private string _connectionString;
+
+        /*Establishing a Database Connection:
+          In the Productlayer class, the constructor takes an IConfiguration parameter
+        to receive the connection string from the configuration file. */
+        public Productlayer(IConfiguration iconfiguration)
+        {
+            _connectionString = iconfiguration.GetConnectionString("Default");
+        }
+
+
+        /*Fetching Data:
+
+        The Products method in the Productlayer class is responsible for fetching data from the "Product" table. 
+        It opens a connection to the database, creates a SqlCommand with a SELECT statement, 
+        and retrieves the data using a SqlDataReader.*/
+
+        public void Products()
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))//details of connection name eg server name database name
+            {
+                // Pass the connection to the command object, so the command object knows on which
+                // connection to execute the command
+                SqlCommand cmd = new SqlCommand("Select * from product", con);//(Select Id, Empnm, Empsal from Product)//sql command query... con has the details of server name and database name
+                // Open the connection. Otherwise you get a runtime error. An open connection is
+                // required to execute the command            
+                con.Open();
+                Console.WriteLine("connected");
+                SqlDataReader rdr = cmd.ExecuteReader(); //returns object of sqldatareder// query fire ,, and give you record set 
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        Console.WriteLine("{0} {1} {2} ", rdr["Id"], rdr["Empnm"], rdr["Empsal"]);
+
+                    }
+                }
+            }
+
+        }
+    }
+}
+
